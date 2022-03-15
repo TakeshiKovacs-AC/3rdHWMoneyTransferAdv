@@ -1,5 +1,13 @@
+import kotlin.math.roundToInt
+
 fun main() {
-    println(payedCommission(3_000_000, CardType.MasterMaestro, 35_000_000))
+    val amount = 3_000_000
+    val commission: Int = payedCommission(amount, CardType.VisaMir, 50_000_000)
+    println(when (commission) {
+             -1 -> cancelTransfer()
+             0 -> printMessage(amount, 0)
+             else -> printMessage(amount, commission)
+    })
 }
 
 enum class CardType {
@@ -19,22 +27,18 @@ fun payedCommission(
     amount: Int,
     cardType: CardType = CardType.VKPay,
     previousSum: Int = 0
-): String {
-
+): Int {
     val totalSum = amount + previousSum
-    val realComVisaMir = (amount * VISA_MIR_COM).toInt()
+    val realComVisaMir = (amount * VISA_MIR_COM).roundToInt()
 
     return when (cardType) {
-        CardType.VKPay -> if (amount < ONE_TIME_VK_LIMIT && totalSum < MONTH_LIMIT_VK)
-                          printMessage(amount, 0)
-                          else cancelTransfer()
-        CardType.MasterMaestro -> if (totalSum < LIMIT_MAS_MAE) printMessage(amount, 0)
-                                  else if (amount < DAY_LIMIT_CARD && totalSum < MONTH_LIMIT_CARD)
-                                  printMessage(amount, (((amount * MAS_MAE_COM_OVER) + 2_000)).toInt())
-                                  else cancelTransfer()
-        CardType.VisaMir -> if (amount < DAY_LIMIT_CARD && totalSum < MONTH_LIMIT_CARD)
-                            printMessage(amount, (if (realComVisaMir > MIN_COM_VISA_MIR) realComVisaMir else MIN_COM_VISA_MIR))
-                            else cancelTransfer()
+        CardType.VKPay -> if (amount < ONE_TIME_VK_LIMIT && totalSum < MONTH_LIMIT_VK) 0
+                          else -1
+        CardType.MasterMaestro -> if (totalSum < LIMIT_MAS_MAE) 0
+                                  else if (amount < DAY_LIMIT_CARD && totalSum < MONTH_LIMIT_CARD) (((amount * MAS_MAE_COM_OVER) + 2_000).roundToInt())
+                                  else -1
+        CardType.VisaMir -> if (amount < DAY_LIMIT_CARD && totalSum < MONTH_LIMIT_CARD) if (realComVisaMir > MIN_COM_VISA_MIR) realComVisaMir else MIN_COM_VISA_MIR
+                            else -1
     }
 }
 
