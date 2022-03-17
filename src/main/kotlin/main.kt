@@ -1,8 +1,8 @@
 import kotlin.math.roundToInt
 
 fun main() {
-    val amount = 3_000_000
-    val commission: Int = payedCommission(amount, CardType.VisaMir, 50_000_000)
+    val amount = 4_000_000
+    val commission: Int = payedCommission(amount, CardType.MasterMaestro, 4_000_000)
     println(when (commission) {
              -1 -> cancelTransfer()
              0 -> printMessage(amount, 0)
